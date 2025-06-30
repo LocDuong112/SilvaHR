@@ -1,26 +1,22 @@
-package com.silviq.silvahr.attendance.core.entity;
+package com.silviq.silvahr.attendance.core.dto;
 
+import com.silviq.silvahr.user.staff.dto.StaffResponse;
 import com.silviq.silvahr.user.staff.entity.StaffEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Getter
 @Setter
-@Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "attendance")
-public class AttendanceEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Builder
+public class AttendanceResponse {
+    private Long attendanceId;
 
-    @ManyToOne
-    private StaffEntity staff;
+    private StaffResponse staff;
 
     private LocalDate workdate;
 
