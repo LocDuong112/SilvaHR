@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "form")
 public class FormEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

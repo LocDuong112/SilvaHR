@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "approval_status")
 public class ApprovalStatusEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

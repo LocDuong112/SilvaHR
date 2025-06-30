@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "leave_form_type")
 public class LeaveFormTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

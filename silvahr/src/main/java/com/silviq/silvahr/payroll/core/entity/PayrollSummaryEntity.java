@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "payroll_summary")
 public class PayrollSummaryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

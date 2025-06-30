@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "payroll_cycle")
 public class PayrollCycleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

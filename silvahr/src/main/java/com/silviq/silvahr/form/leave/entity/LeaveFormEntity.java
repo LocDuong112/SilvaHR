@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "leave_form")
 public class LeaveFormEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

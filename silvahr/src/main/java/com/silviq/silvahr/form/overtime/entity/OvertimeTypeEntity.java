@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "overtime_type")
 public class OvertimeTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

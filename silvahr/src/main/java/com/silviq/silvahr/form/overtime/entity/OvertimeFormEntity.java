@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "overtime_form")
 public class OvertimeFormEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

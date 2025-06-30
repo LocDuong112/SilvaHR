@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "form_approval_log")
 public class FormApprovalLogEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

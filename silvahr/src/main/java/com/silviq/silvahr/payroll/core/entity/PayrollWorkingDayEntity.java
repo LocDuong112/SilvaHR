@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "payroll_working_day")
 public class PayrollWorkingDayEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
