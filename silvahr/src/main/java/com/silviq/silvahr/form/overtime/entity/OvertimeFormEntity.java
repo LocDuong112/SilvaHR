@@ -1,10 +1,10 @@
 package com.silviq.silvahr.form.overtime.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.silviq.silvahr.form.core.entity.FormEntity;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,4 +16,16 @@ public class OvertimeFormEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private FormEntity form;
+
+    private String reason;
+
+    private LocalDateTime startDateTime;
+
+    private LocalDateTime endDateTime;
+
+    @ManyToOne
+    private OvertimeTypeEntity overtimeTypeEntity;
 }
