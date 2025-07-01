@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 public class AttendanceRequest {
     private Long staffId;
 
-    private LocalDate workdate;
-
     private LocalDateTime checkinDateTime;
 
     private LocalDateTime checkoutDateTime;

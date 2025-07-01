@@ -9,5 +9,5 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public interface AttendanceService {
-    public AttendanceResponse employeeCheckin(AttendanceRequest attendanceRequest);
+    public AttendanceResponse employeeCheckin(AttendanceRequest attendanceRequest) throws Exception;
 }
