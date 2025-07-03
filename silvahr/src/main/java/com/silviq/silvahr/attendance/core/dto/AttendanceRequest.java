@@ -1,9 +1,7 @@
 package com.silviq.silvahr.attendance.core.dto;
 
-import com.silviq.silvahr.user.staff.entity.StaffEntity;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -11,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class AttendanceRequest {
     private Long staffId;
 

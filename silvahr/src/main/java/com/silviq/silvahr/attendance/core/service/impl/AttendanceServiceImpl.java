@@ -3,12 +3,16 @@ package com.silviq.silvahr.attendance.core.service.impl;
 import com.silviq.silvahr.attendance.core.dto.AttendanceRequest;
 import com.silviq.silvahr.attendance.core.dto.AttendanceResponse;
 import com.silviq.silvahr.attendance.core.entity.AttendanceEntity;
+import com.silviq.silvahr.attendance.core.mapper.AttendanceMapper;
 import com.silviq.silvahr.attendance.core.repository.AttendanceRepository;
 import com.silviq.silvahr.attendance.core.service.AttendanceService;
+import com.silviq.silvahr.user.staff.dto.StaffResponse;
 import com.silviq.silvahr.user.staff.entity.StaffEntity;
+import com.silviq.silvahr.user.staff.mapper.StaffMapper;
 import com.silviq.silvahr.user.staff.repository.StaffRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +20,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 @Slf4j
+@Service
 public class AttendanceServiceImpl implements AttendanceService {
     @Autowired
     private StaffRepository staffRepository;
@@ -23,9 +28,20 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
-    // TODO: Implement this
+    @Autowired
+    private AttendanceMapper attendanceMapper;
+    
+    @Autowired
+    private StaffMapper staffMapper;
+
     @Override
     public AttendanceResponse employeeCheckin(AttendanceRequest attendanceRequest) throws Exception {
+        AttendanceResponse attendanceResponse;
+        if (attendanceRequest.getStaffId() <= 0L || attendanceRequest.getCheckinDateTime() == null) {
+            log.info("attendanceRequest = {}", attendanceRequest);
+            throw new Exception("Check your request!");
+        }
+
         // 1. Check staff id exist in system?
         Optional<StaffEntity> optionalStaff = staffRepository.findById(attendanceRequest.getStaffId());
         if (optionalStaff.isEmpty()) {
@@ -41,31 +57,80 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         // 3. Check if already checkin, take the earliest checkin time
         Optional<AttendanceEntity> optionalAttendanceEntity = attendanceRepository.findExistingCheckin(optionalStaff.get().getId(), LocalDate.now());
-        if (optionalAttendanceEntity.isPresent()) {
-            attendanceRequest.setCheckinDateTime(attendanceRequest.getCheckinDateTime().isBefore(optionalAttendanceEntity.get().getCheckinDateTime()) ? attendanceRequest.getCheckinDateTime() : optionalAttendanceEntity.get().getCheckinDateTime());
-        }
+        optionalAttendanceEntity.ifPresent(attendanceEntity -> attendanceRequest.setCheckinDateTime(attendanceRequest.getCheckinDateTime().isBefore(attendanceEntity.getCheckinDateTime()) ? attendanceRequest.getCheckinDateTime() : attendanceEntity.getCheckinDateTime()));
 
         // 4. Create checkin request
-        AttendanceEntity tmpAttendance = new AttendanceEntity();
-        tmpAttendance.builder()
-                .id(optionalAttendanceEntity.map(AttendanceEntity::getId).orElse(null))
-                .checkinDateTime(attendanceRequest.getCheckinDateTime())
-                .workdate(LocalDate.now())
-                .isPresent(true)
-                .build();
-        attendanceRepository.save(tmpAttendance);
+        AttendanceEntity tmpAttendance = attendanceMapper.requestToEntity(attendanceRequest);
+        tmpAttendance.setId(optionalAttendanceEntity.map(AttendanceEntity::getId).orElse(null));
+        tmpAttendance.setWorkdate(LocalDate.now());
+        tmpAttendance.setPresent(true);
+        tmpAttendance.setCheckoutDateTime(null);
+
+        tmpAttendance = attendanceRepository.save(tmpAttendance);
+
+        attendanceResponse = attendanceMapper.entityToResponse(tmpAttendance);
 
         // 5. Add document
+        // TODO: Do in Controller of the Document
+
         // 6. Notify via mail
-        return null;
+        // TODO: Later on
+
+        return attendanceResponse;
+    }
+
+    /**
+     * @param attendanceRequest 
+     * @return
+     */
+    @Override
+    public AttendanceResponse employeeCheckout(AttendanceRequest attendanceRequest) throws Exception {
+        AttendanceResponse attendanceResponse;
+        if (attendanceRequest.getStaffId() <= 0L || attendanceRequest.getCheckoutDateTime() == null) {
+            log.info("attendanceRequest = {}", attendanceRequest);
+            throw new Exception("Check your request!");
+        }
+
+        // 1. Check staff id exist in system?
+        Optional<StaffEntity> optionalStaff = staffRepository.findById(attendanceRequest.getStaffId());
+        if (optionalStaff.isEmpty()) {
+            log.info("Staff id={} is not available!", attendanceRequest.getStaffId());
+            throw new Exception("Staff id is not available!");
+        }
+
+        // 2. Check valid workdate, checkoutDateTime format
+        if (!isWithinToday(attendanceRequest.getCheckoutDateTime())) {
+            log.info("Checkout time={} is not within today!", attendanceRequest.getCheckoutDateTime());
+        }
+
+        // 3. Check if already checkout, take the latest checkout time
+        Optional<AttendanceEntity> optionalAttendanceEntity = attendanceRepository.findExistingCheckin(optionalStaff.get().getId(), LocalDate.now());
+        if (optionalAttendanceEntity.isPresent() && optionalAttendanceEntity.get().getCheckoutDateTime() != null) {
+            optionalAttendanceEntity.ifPresent(attendanceEntity -> attendanceRequest.setCheckoutDateTime(attendanceRequest.getCheckoutDateTime().isAfter(attendanceEntity.getCheckoutDateTime()) ? attendanceRequest.getCheckoutDateTime() : attendanceEntity.getCheckoutDateTime()));
+        }
+
+        // 4. Create checkout request
+        AttendanceEntity tmpAttendance = attendanceMapper.requestToEntity(attendanceRequest);
+        tmpAttendance.setId(optionalAttendanceEntity.map(AttendanceEntity::getId).orElse(null));
+        tmpAttendance.setWorkdate(optionalAttendanceEntity.map(AttendanceEntity::getWorkdate).orElse(LocalDate.now()));
+        tmpAttendance.setPresent(true);
+        tmpAttendance.setCheckinDateTime(optionalAttendanceEntity.map(AttendanceEntity::getCheckinDateTime).orElse(null));
+
+        tmpAttendance = attendanceRepository.save(tmpAttendance);
+
+        attendanceResponse = attendanceMapper.entityToResponse(tmpAttendance);
+
+        // 5. Add document
+        // TODO: Do in Controller of the Document
+
+        // 6. Notify via mail
+        // TODO: Later on
+
+        return attendanceResponse;
     }
 
     private boolean isWithinToday(LocalDateTime checkin) {
-        LocalDate today = LocalDate.now(); // Or use a fixed zone if needed
-
-        LocalDateTime startOfDay = today.atStartOfDay(); // 00:00
-        LocalDateTime endOfDay = today.atTime(LocalTime.MAX); // 23:59:59.999999999
-
-        return !checkin.isBefore(startOfDay) && !checkin.isAfter(endOfDay);
+        LocalDateTime now = LocalDateTime.now();
+        return !checkin.isAfter(now) && checkin.toLocalDate().isEqual(now.toLocalDate());
     }
 }

@@ -6,8 +6,8 @@ import com.silviq.silvahr.attendance.core.entity.AttendanceEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-@Service
 @Transactional
 public interface AttendanceService {
-    public AttendanceResponse employeeCheckin(AttendanceRequest attendanceRequest) throws Exception;
+    AttendanceResponse employeeCheckin(AttendanceRequest attendanceRequest) throws Exception;
+    AttendanceResponse employeeCheckout(AttendanceRequest attendanceRequest) throws Exception;
 }
