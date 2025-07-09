@@ -23,6 +23,4 @@ public class FormResponse {
     private LeaveFormResponse leaveFormResponse;
 
     private OvertimeFormResponse overtimeFormResponse;
-
-    private List<FormApprovalLogResponse> formApprovalLogResponseList;
 }

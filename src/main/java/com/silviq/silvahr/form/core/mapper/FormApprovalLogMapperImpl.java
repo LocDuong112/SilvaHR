@@ -2,7 +2,9 @@ package com.silviq.silvahr.form.core.mapper;
 
 import com.silviq.silvahr.form.core.dto.FormApprovalLogRequest;
 import com.silviq.silvahr.form.core.dto.FormApprovalLogResponse;
+import com.silviq.silvahr.form.core.dto.FormResponse;
 import com.silviq.silvahr.form.core.entity.FormApprovalLogEntity;
+import com.silviq.silvahr.form.core.entity.FormEntity;
 import com.silviq.silvahr.user.staff.mapper.StaffMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

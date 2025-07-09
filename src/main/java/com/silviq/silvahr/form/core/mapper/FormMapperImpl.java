@@ -20,9 +20,6 @@ public class FormMapperImpl implements FormMapper {
     @Autowired
     private OvertimeFormMapper overtimeFormMapper;
 
-    @Autowired
-    private FormApprovalLogMapper formApprovalLogMapper;
-
     @Override
     public FormEntity requestToEntity(FormRequest formRequest) throws Exception {
         return null;
@@ -48,9 +45,6 @@ public class FormMapperImpl implements FormMapper {
                 .formStatus(formEntity.getFormStatusEntity().getStatus())
                 .leaveFormResponse(leaveFormMapper.entityToResponse(formEntity.getLeaveFormEntity()))
                 .overtimeFormResponse(overtimeFormMapper.entityToResponse(formEntity.getOvertimeFormEntity()))
-                .formApprovalLogResponseList(formEntity.getFormApprovalLogEntityList().stream()
-                        .map(formApprovalLogMapper::entityToResponse)
-                        .toList())
                 .build();
     }
 }
